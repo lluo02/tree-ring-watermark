@@ -13,19 +13,13 @@ import open_clip
 from optim_utils import *
 from io_utils import *
 
-tol = 0.01
-def test(x):
-    if abs(x) < tol:
-        return tol+x if x < 0 else x-tol
-    return torch.randn(1)[0]
-
 
 def main(args):
     table = None
     if args.with_tracking:
         wandb.init(project='diffusion_watermark', name=args.run_name, tags=['tree_ring_watermark'])
         wandb.config.update(args)
-        table = wandb.Table(columns=['gen_no_w', 'no_w_clip_score', 'gen_w', 'w_clip_score', 'prompt', 'no_w_metric', 'w_metric', 'no_w_p_val', 'w_p_val'])
+        table = wandb.Table(columns=['gen_no_w', 'no_w_clip_score', 'gen_w', 'w_clip_score', 'prompt', 'no_w_metric', 'w_metric'])
     
     # load diffusion model
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
@@ -34,7 +28,7 @@ def main(args):
     pipe = InversableStableDiffusionPipeline.from_pretrained(
         args.model_id,
         scheduler=scheduler,
-        torch_dtype=torch.float32,
+        torch_dtype=torch.float16,
         revision='fp16',
         )
     pipe = pipe.to(device)
@@ -49,7 +43,7 @@ def main(args):
 
     tester_prompt = '' # assume at the detection time, the original prompt is unknown
     text_embeddings = pipe.get_text_embedding(tester_prompt)
-    
+
     # ground-truth patch
     gt_patch = get_watermarking_pattern(pipe, args, device)
 
@@ -62,12 +56,13 @@ def main(args):
     for i in tqdm(range(args.start, args.end)):
         seed = i + args.gen_seed
         
-        current_prompt = dataset[i][prompt_key] 
+        current_prompt = dataset[i][prompt_key]
         
         ### generation
         # generation without watermarking
         set_random_seed(seed)
         init_latents_no_w = pipe.get_random_latents()
+        
         outputs_no_w = pipe(
             current_prompt,
             num_images_per_prompt=args.num_images,
@@ -83,8 +78,7 @@ def main(args):
         if init_latents_no_w is None:
             set_random_seed(seed)
             init_latents_w = pipe.get_random_latents()
-            if "ring_tol" in args.w_pattern:
-                init_latents_w.apply_(lambda x: test(x) if abs(x) < tol else x)
+            # change the porportion of pos and neg values in latents
         else:
             init_latents_w = copy.deepcopy(init_latents_no_w)
 
@@ -133,8 +127,6 @@ def main(args):
 
         # eval
         no_w_metric, w_metric = eval_watermark(reversed_latents_no_w, reversed_latents_w, watermarking_mask, gt_patch, args)
-        
-        no_w_p_val, w_p_val = get_p_value(reversed_latents_no_w, reversed_latents_w, watermarking_mask, gt_patch, args)
 
         if args.reference_model is not None:
             sims = measure_similarity([orig_image_no_w, orig_image_w], current_prompt, ref_model, ref_clip_preprocess, ref_tokenizer, device)
@@ -147,25 +139,23 @@ def main(args):
         results.append({
             'no_w_metric': no_w_metric, 'w_metric': w_metric, 'w_no_sim': w_no_sim, 'w_sim': w_sim,
         })
-        #Append p values
-        results.append({'no_w_p_val': no_w_p_val, 'w_p_val': w_p_val})
 
-        no_w_metrics.append(no_w_metric)
-        w_metrics.append(w_metric)
-        
+        no_w_metrics.append(-no_w_metric)
+        w_metrics.append(-w_metric)
+
         if args.with_tracking:
             if (args.reference_model is not None) and (i < args.max_num_log_image):
                 # log images when we use reference_model
-                table.add_data(wandb.Image(orig_image_no_w), w_no_sim, wandb.Image(orig_image_w), w_sim, current_prompt, no_w_metric, w_metric, no_w_p_val, w_p_val)
+                table.add_data(wandb.Image(orig_image_no_w), w_no_sim, wandb.Image(orig_image_w), w_sim, current_prompt, no_w_metric, w_metric)
             else:
-                table.add_data(None, w_no_sim, None, w_sim, current_prompt, no_w_metric, w_metric, no_w_p_val, w_p_val)
+                table.add_data(None, w_no_sim, None, w_sim, current_prompt, no_w_metric, w_metric)
 
             clip_scores.append(w_no_sim)
             clip_scores_w.append(w_sim)
 
     # roc
     preds = no_w_metrics +  w_metrics
-    t_labels = [1] * len(no_w_metrics) + [0] * len(w_metrics)
+    t_labels = [0] * len(no_w_metrics) + [1] * len(w_metrics)
 
     fpr, tpr, thresholds = metrics.roc_curve(t_labels, preds, pos_label=1)
     auc = metrics.auc(fpr, tpr)

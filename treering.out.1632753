@@ -1,0 +1,26 @@
+wandb: Currently logged in as: shilin40 (better-diffusion-watermarks). Use `wandb login --relogin` to force relogin
+wandb: Tracking run with wandb version 0.15.12
+wandb: Run data is saved locally in /nfshomes/shilin40/CMSC673/venv/tree-ring-watermark/wandb/run-20231103_112619-kul9cks6
+wandb: Run `wandb offline` to turn off syncing.
+wandb: Syncing run no_attack
+wandb: ⭐️ View project at https://wandb.ai/better-diffusion-watermarks/diffusion_watermark
+wandb: 🚀 View run at https://wandb.ai/better-diffusion-watermarks/diffusion_watermark/runs/kul9cks6
+unet/diffusion_pytorch_model.safetensors not found
+Loading pipeline components...:   0%|          | 0/5 [00:00<?, ?it/s]Loading pipeline components...:  20%|██        | 1/5 [00:00<00:00,  5.56it/s]Loading pipeline components...:  40%|████      | 2/5 [00:02<00:03,  1.16s/it]Loading pipeline components...:  60%|██████    | 3/5 [00:09<00:08,  4.04s/it]Loading pipeline components...: 100%|██████████| 5/5 [00:14<00:00,  3.30s/it]Loading pipeline components...: 100%|██████████| 5/5 [00:14<00:00,  2.99s/it]
+/nfshomes/shilin40/CMSC673/venv/tree-ring-watermark/inverse_stable_diffusion.py:63: FutureWarning: Accessing config attribute `in_channels` directly via 'UNet2DConditionModel' object attribute is deprecated. Please access 'in_channels' over 'UNet2DConditionModel's config object instead, e.g. 'unet.config.in_channels'.
+  num_channels_latents = self.unet.in_channels
+Traceback (most recent call last):
+  File "/nfshomes/shilin40/CMSC673/venv/tree-ring-watermark/run_tree_ring_watermark.py", line 217, in <module>
+    main(args)
+  File "/nfshomes/shilin40/CMSC673/venv/tree-ring-watermark/run_tree_ring_watermark.py", line 48, in main
+    gt_patch = get_watermarking_pattern(pipe, args, device)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/nfshomes/shilin40/CMSC673/venv/tree-ring-watermark/optim_utils.py", line 192, in get_watermarking_pattern
+    return gt_patch
+           ^^^^^^^^
+UnboundLocalError: cannot access local variable 'gt_patch' where it is not associated with a value
+wandb: Waiting for W&B process to finish... (failed 1). Press Control-C to abort syncing.
+wandb: 🚀 View run no_attack at: https://wandb.ai/better-diffusion-watermarks/diffusion_watermark/runs/kul9cks6
+wandb: ️⚡ View job at https://wandb.ai/better-diffusion-watermarks/diffusion_watermark/jobs/QXJ0aWZhY3RDb2xsZWN0aW9uOjEwMzY3NDY2Ng==/version_details/v6
+wandb: Synced 5 W&B file(s), 0 media file(s), 0 artifact file(s) and 0 other file(s)
+wandb: Find logs at: ./wandb/run-20231103_112619-kul9cks6/logs
