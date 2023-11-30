@@ -22,7 +22,7 @@ def adjust_pos_neg_percentage(value, pct):
 def change_latent_pos_neg_percentage(tensor, target_pos_percentage=0.5):
     flat_tensor = tensor.view(-1)
     flat_tensor_len = len(flat_tensor)
-    
+    """
     num_pos = (flat_tensor > 0).sum().item()
     num_neg = (flat_tensor < 0).sum().item()
     current_pos_percentage = num_pos / flat_tensor_len
@@ -30,7 +30,7 @@ def change_latent_pos_neg_percentage(tensor, target_pos_percentage=0.5):
 
     print("Percentage of positive and negative values before adjustment:")
     print("Pos:", current_pos_percentage, "Neg:", current_neg_percentage)
-    
+    """
     tensor.apply_(lambda x: adjust_pos_neg_percentage(x, target_pos_percentage))
     
     # Print the final percentage of positive and negative values after adjustment
@@ -53,13 +53,20 @@ if __name__ == '__main__':
         revision='fp16',
     )
     pipe = pipe.to(device)
+  
     init_latents_w = pipe.get_random_latents()
-    
-    init_latents_w_adjusted1 = change_latent_pos_neg_percentage(init_latents_w, target_pos_percentage=1)
-    print(init_latents_w_adjusted1)
-    init_latents_w_adjusted2 = change_latent_pos_neg_percentage(init_latents_w, target_pos_percentage=0)
-    print(init_latents_w_adjusted2)
-    init_latents_w_adjusted3 = change_latent_pos_neg_percentage(init_latents_w, target_pos_percentage=0.3235)
-    print(init_latents_w_adjusted3)
-    init_latents_w_adjusted4 = change_latent_pos_neg_percentage(init_latents_w, target_pos_percentage=0.749)
-    print(init_latents_w_adjusted4)
+    print("1")
+    init_latents_w_adjusted1 = change_latent_pos_neg_percentage(torch.clone(init_latents_w), target_pos_percentage=1)
+    #print(init_latents_w_adjusted1)
+    print("2")
+    init_latents_w_adjusted2 = change_latent_pos_neg_percentage(torch.clone(init_latents_w), target_pos_percentage=0)
+    #print(init_latents_w_adjusted2)
+    print("3")
+    init_latents_w_adjusted3 = change_latent_pos_neg_percentage(torch.clone(init_latents_w), target_pos_percentage=0.3235)
+    #print(init_latents_w_adjusted3)
+    print("4")
+    init_latents_w_adjusted4 = change_latent_pos_neg_percentage(torch.clone(init_latents_w), target_pos_percentage=0.749)
+    #print(init_latents_w_adjusted4)
+    print("5 and 6")
+    init_latents_w_adjusted5 = change_latent_pos_neg_percentage(torch.clone(init_latents_w), target_pos_percentage=0.3)
+    init_latents_w_adjusted6 = change_latent_pos_neg_percentage(torch.clone(init_latents_w), target_pos_percentage=0.3)

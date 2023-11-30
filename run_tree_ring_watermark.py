@@ -79,6 +79,8 @@ def main(args):
             set_random_seed(seed)
             init_latents_w = pipe.get_random_latents()
             # change the porportion of pos and neg values in latents
+            # init_latents_w.apply_(lambda x: adjust_pos_neg_percentage(x, target_pos_percentage))
+            init_latents_w.apply_(lambda x: adjust_pos_neg_percentage(x, 0.3))
         else:
             init_latents_w = copy.deepcopy(init_latents_no_w)
 

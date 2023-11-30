@@ -260,3 +260,7 @@ def get_p_value(reversed_latents_no_w, reversed_latents_w, watermarking_mask, gt
     p_w = scipy.stats.ncx2.cdf(x=x_w, df=len(target_patch), nc=lambda_w)
 
     return p_no_w, p_w
+
+def change_latent_pos_neg_percentage(tensor, target_pos_percentage=0.5):
+    flat_tensor = tensor.view(-1)
+    flat_tensor_len = len(flat_tensor)
