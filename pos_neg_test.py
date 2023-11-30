@@ -31,15 +31,19 @@ def change_latent_pos_neg_percentage(tensor, target_pos_percentage=0.5):
     print("Percentage of positive and negative values before adjustment:")
     print("Pos:", current_pos_percentage, "Neg:", current_neg_percentage)
     """
-    tensor.apply_(lambda x: adjust_pos_neg_percentage(x, target_pos_percentage))
-    
+    # tensor.apply_ is not working
+    # tensor.apply_(lambda x: adjust_pos_neg_percentage(x, target_pos_percentage))
+    # try to create a new tensor
+    new_tensor = torch.tensor([adjust_pos_neg_percentage(x.item(), target_pos_percentage) for x in flat_tensor], dtype=tensor.dtype)
+    new_tensor = new_tensor.view(tensor.shape)
+    new_flat_tensor = new_tensor.view(-1)
     # Print the final percentage of positive and negative values after adjustment
-    final_pos_percentage = (flat_tensor > 0).sum().item() / flat_tensor_len
-    final_neg_percentage = (flat_tensor < 0).sum().item() / flat_tensor_len
+    final_pos_percentage = (new_flat_tensor > 0).sum().item() / len(new_flat_tensor)
+    final_neg_percentage = (new_flat_tensor < 0).sum().item() / len(new_flat_tensor)
     print("Percentage of positive and negative values after adjustment:")
     print("Positive:", final_pos_percentage, "Negative:", final_neg_percentage)
 
-    return tensor
+    return new_tensor
 
 
 if __name__ == '__main__':
