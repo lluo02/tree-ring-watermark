@@ -2,7 +2,7 @@ import torch
 from torchvision import transforms
 from datasets import load_dataset
 
-from PIL import Image, ImageFilter
+from PIL import Image, ImageFilter, ImageOps
 import random
 import numpy as np
 import copy
@@ -75,6 +75,10 @@ def image_distortion(img1, img2, seed, args):
     if args.brightness_factor is not None:
         img1 = transforms.ColorJitter(brightness=args.brightness_factor)(img1)
         img2 = transforms.ColorJitter(brightness=args.brightness_factor)(img2)
+
+    if args.num_bits_posterize is not None:
+        img1 = ImageOps.posterize(img1, args.num_bits_posterize)
+        img2 = ImageOps.posterize(img2, args.num_bits_posterize) 
 
     return img1, img2
 

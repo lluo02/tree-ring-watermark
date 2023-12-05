@@ -246,6 +246,7 @@ if __name__ == '__main__':
     parser.add_argument('--gaussian_std', default=None, type=float)
     parser.add_argument('--brightness_factor', default=None, type=float)
     parser.add_argument('--rand_aug', default=0, type=int)
+    parser.add_argument('--num_bits_posterize', default=None, type=int)
 
     args = parser.parse_args()
 
