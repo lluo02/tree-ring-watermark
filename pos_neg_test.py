@@ -59,9 +59,10 @@ if __name__ == '__main__':
     pipe = pipe.to(device)
   
     init_latents_w = pipe.get_random_latents()
+    print(init_latents_w)
     print("1")
     init_latents_w_adjusted1 = change_latent_pos_neg_percentage(torch.clone(init_latents_w), target_pos_percentage=1)
-    #print(init_latents_w_adjusted1)
+    print(init_latents_w_adjusted1)
     print("2")
     init_latents_w_adjusted2 = change_latent_pos_neg_percentage(torch.clone(init_latents_w), target_pos_percentage=0)
     #print(init_latents_w_adjusted2)

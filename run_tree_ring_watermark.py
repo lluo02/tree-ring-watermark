@@ -78,12 +78,13 @@ def main(args):
         if init_latents_no_w is None:
             set_random_seed(seed)
             init_latents_w = pipe.get_random_latents()
-            # TODO: change the porportion of pos and neg values in latents
-            # init_latents_w.apply_(lambda x: adjust_pos_neg_percentage(x, 0.3))
+            # To hange the porportion of pos and neg values in latents
             flat_tensor = init_latents_w.view(-1)
+            # 30% positive
             new_tensor = torch.tensor([adjust_pos_neg_percentage(x.item(), 0.3) for x in flat_tensor], dtype=tensor.dtype)
             new_tensor = new_tensor.view(tensor.shape)
             init_latents_w =  new_tensor
+            ###
         else:
             init_latents_w = copy.deepcopy(init_latents_no_w)
 
