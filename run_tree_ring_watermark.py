@@ -14,7 +14,7 @@ from optim_utils import *
 from io_utils import *
 
 tol = 0.01
-def test(x):
+def tol(x):
     if abs(x) < tol:
         return tol+x if x < 0 else x-tol
     return torch.randn(1)[0]
@@ -102,10 +102,23 @@ def main(args):
             init_latents_w = pipe.get_random_latents()
         else:
             init_latents_w = copy.deepcopy(init_latents_no_w)
+            
         if "ring_alt" in args.w_pattern:
             init_latents_w = torch.abs(init_latents_w)
             init_latents_w = torch.mul(init_latents_w, values)
-            
+               
+        if "ring_tol" in args.w_pattern:
+                init_latents_w.apply_(lambda x: tol(x) if abs(x) < tol else x)
+                
+        # change the percentage of pos and neg values of noise
+        if not args.w_pos_ratio == 0.5:
+            flat_tensor = init_latents_w.view(-1)
+            new_tensor = torch.tensor(
+                [adjust_pos_neg_percentage(x.item(), args.w_pos_ratio) for x in flat_tensor],
+                dtype=init_latents_w.dtype
+            ).view(init_latents_w.shape)
+            new_tensor = new_tensor.to(device)
+            init_latents_w = copy.deepcopy(new_tensor)
         # get watermarking mask
         watermarking_mask = get_watermarking_mask(init_latents_w, args, device)
 
@@ -228,6 +241,7 @@ if __name__ == '__main__':
     parser.add_argument('--w_measurement', default='l1_complex')
     parser.add_argument('--w_injection', default='complex')
     parser.add_argument('--w_pattern_const', default=0, type=float)
+    parser.add_argument('--w_pos_ratio', default=0.5, type=float)
     
     # for image distortion
     parser.add_argument('--r_degree', default=None, type=float)

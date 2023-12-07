@@ -260,3 +260,9 @@ def get_p_value(reversed_latents_no_w, reversed_latents_w, watermarking_mask, gt
     p_w = scipy.stats.ncx2.cdf(x=x_w, df=len(target_patch), nc=lambda_w)
 
     return p_no_w, p_w
+
+# use this method to change the percentage of positive and negative values in latent
+# put the percentage of positive values youw want in the parameter
+def adjust_pos_neg_percentage(value, pct):
+    is_positive = torch.rand(1).item() < pct
+    return abs(value) if is_positive else -abs(value)
