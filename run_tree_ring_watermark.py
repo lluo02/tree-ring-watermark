@@ -71,6 +71,9 @@ def main(args):
     clip_scores_w = []
     no_w_metrics = []
     w_metrics = []
+    p_values = []
+    p_values_w = []
+
     temp = torch.ones(64, 64).cuda()
     temp[:, 1::2] = -1
     values = torch.stack([temp] * 4, dim=0)
@@ -166,7 +169,8 @@ def main(args):
         no_w_metric, w_metric = eval_watermark(reversed_latents_no_w, reversed_latents_w, watermarking_mask, gt_patch, args)
         
         no_w_p_val, w_p_val = get_p_value(reversed_latents_no_w, reversed_latents_w, watermarking_mask, gt_patch, args)
-
+        p_values.append(no_w_p_val)
+        p_values_w.append(w_p_val)
         if args.reference_model is not None:
             sims = measure_similarity([orig_image_no_w, orig_image_w], current_prompt, ref_model, ref_clip_preprocess, ref_tokenizer, device)
             w_no_sim = sims[0].item()
@@ -207,7 +211,7 @@ def main(args):
         wandb.log({'Table': table})
         wandb.log({'clip_score_mean': mean(clip_scores), 'clip_score_std': stdev(clip_scores),
                    'w_clip_score_mean': mean(clip_scores_w), 'w_clip_score_std': stdev(clip_scores_w),
-                   'auc': auc, 'acc':acc, 'TPR@1%FPR': low})
+                   'auc': auc, 'acc':acc, 'TPR@1%FPR': low, 'mean_p_val': mean(p_values), 'mean_p_val_w': mean(p_values_w)})
     
     print(f'clip_score_mean: {mean(clip_scores)}')
     print(f'w_clip_score_mean: {mean(clip_scores_w)}')
