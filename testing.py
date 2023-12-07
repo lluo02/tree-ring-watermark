@@ -32,7 +32,16 @@ if __name__ == '__main__':
   pipe = pipe.to(device)
 
   init_latents_w = pipe.get_random_latents()
-  init_latents_w.apply_(lambda x: test(x) if abs(x) < 0.01 else x)
+  
+  print(init_latents_w)
+  
+  
+  flat_tensor = init_latents_w.view(-1)
+  new_tensor = torch.tensor([adjust_pos_neg_percentage(x.item(), 0.3) for x in flat_tensor], dtype=init_latents_w.dtype)
+  new_tensor = new_tensor.view(init_latents_w.shape)
+  init_latents_w = new_tensor.to(device)
+  
+  print("new")
   print(init_latents_w)
 
 

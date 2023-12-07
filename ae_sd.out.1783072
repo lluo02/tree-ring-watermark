@@ -1,0 +1,92 @@
+wandb: Currently logged in as: shilin40 (better-diffusion-watermarks). Use `wandb login --relogin` to force relogin
+wandb: wandb version 0.16.1 is available!  To upgrade, please run:
+wandb:  $ pip install wandb --upgrade
+wandb: Tracking run with wandb version 0.15.12
+wandb: Run data is saved locally in /nfshomes/shilin40/CMSC673/venv/tree-ring-watermark/wandb/run-20231206_223121-fvzx83d2
+wandb: Run `wandb offline` to turn off syncing.
+wandb: Syncing run testing_no_attack_pos_ratio_30
+wandb: ⭐️ View project at https://wandb.ai/better-diffusion-watermarks/diffusion_watermark
+wandb: 🚀 View run at https://wandb.ai/better-diffusion-watermarks/diffusion_watermark/runs/fvzx83d2
+Traceback (most recent call last):
+  File "/nfshomes/shilin40/CMSC673/venv/lib/python3.11/site-packages/urllib3/connection.py", line 203, in _new_conn
+    sock = connection.create_connection(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/nfshomes/shilin40/CMSC673/venv/lib/python3.11/site-packages/urllib3/util/connection.py", line 85, in create_connection
+    raise err
+  File "/nfshomes/shilin40/CMSC673/venv/lib/python3.11/site-packages/urllib3/util/connection.py", line 73, in create_connection
+    sock.connect(sa)
+OSError: [Errno 101] Network is unreachable
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/nfshomes/shilin40/CMSC673/venv/lib/python3.11/site-packages/urllib3/connectionpool.py", line 790, in urlopen
+    response = self._make_request(
+               ^^^^^^^^^^^^^^^^^^^
+  File "/nfshomes/shilin40/CMSC673/venv/lib/python3.11/site-packages/urllib3/connectionpool.py", line 491, in _make_request
+    raise new_e
+  File "/nfshomes/shilin40/CMSC673/venv/lib/python3.11/site-packages/urllib3/connectionpool.py", line 467, in _make_request
+    self._validate_conn(conn)
+  File "/nfshomes/shilin40/CMSC673/venv/lib/python3.11/site-packages/urllib3/connectionpool.py", line 1092, in _validate_conn
+    conn.connect()
+  File "/nfshomes/shilin40/CMSC673/venv/lib/python3.11/site-packages/urllib3/connection.py", line 611, in connect
+    self.sock = sock = self._new_conn()
+                       ^^^^^^^^^^^^^^^^
+  File "/nfshomes/shilin40/CMSC673/venv/lib/python3.11/site-packages/urllib3/connection.py", line 218, in _new_conn
+    raise NewConnectionError(
+urllib3.exceptions.NewConnectionError: <urllib3.connection.HTTPSConnection object at 0x7f1a080a0910>: Failed to establish a new connection: [Errno 101] Network is unreachable
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/nfshomes/shilin40/CMSC673/venv/lib/python3.11/site-packages/requests/adapters.py", line 486, in send
+    resp = conn.urlopen(
+           ^^^^^^^^^^^^^
+  File "/nfshomes/shilin40/CMSC673/venv/lib/python3.11/site-packages/urllib3/connectionpool.py", line 844, in urlopen
+    retries = retries.increment(
+              ^^^^^^^^^^^^^^^^^^
+  File "/nfshomes/shilin40/CMSC673/venv/lib/python3.11/site-packages/urllib3/util/retry.py", line 515, in increment
+    raise MaxRetryError(_pool, url, reason) from reason  # type: ignore[arg-type]
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+urllib3.exceptions.MaxRetryError: HTTPSConnectionPool(host='huggingface.co', port=443): Max retries exceeded with url: /api/models/stabilityai/stable-diffusion-2-1-base/revision/fp16 (Caused by NewConnectionError('<urllib3.connection.HTTPSConnection object at 0x7f1a080a0910>: Failed to establish a new connection: [Errno 101] Network is unreachable'))
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/nfshomes/shilin40/CMSC673/venv/tree-ring-watermark/run_tree_ring_watermark.py", line 255, in <module>
+    main(args)
+  File "/nfshomes/shilin40/CMSC673/venv/tree-ring-watermark/run_tree_ring_watermark.py", line 47, in main
+    pipe = InversableStableDiffusionPipeline.from_pretrained(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/nfshomes/shilin40/CMSC673/venv/lib/python3.11/site-packages/diffusers/pipelines/pipeline_utils.py", line 939, in from_pretrained
+    cached_folder = cls.download(
+                    ^^^^^^^^^^^^^
+  File "/nfshomes/shilin40/CMSC673/venv/lib/python3.11/site-packages/diffusers/pipelines/pipeline_utils.py", line 1441, in download
+    info = model_info(
+           ^^^^^^^^^^^
+  File "/nfshomes/shilin40/CMSC673/venv/lib/python3.11/site-packages/huggingface_hub/utils/_validators.py", line 118, in _inner_fn
+    return fn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^
+  File "/nfshomes/shilin40/CMSC673/venv/lib/python3.11/site-packages/huggingface_hub/hf_api.py", line 1697, in model_info
+    r = get_session().get(path, headers=headers, timeout=timeout, params=params)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/nfshomes/shilin40/CMSC673/venv/lib/python3.11/site-packages/requests/sessions.py", line 602, in get
+    return self.request("GET", url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/nfshomes/shilin40/CMSC673/venv/lib/python3.11/site-packages/requests/sessions.py", line 589, in request
+    resp = self.send(prep, **send_kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/nfshomes/shilin40/CMSC673/venv/lib/python3.11/site-packages/requests/sessions.py", line 703, in send
+    r = adapter.send(request, **kwargs)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/nfshomes/shilin40/CMSC673/venv/lib/python3.11/site-packages/huggingface_hub/utils/_http.py", line 63, in send
+    return super().send(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/nfshomes/shilin40/CMSC673/venv/lib/python3.11/site-packages/requests/adapters.py", line 519, in send
+    raise ConnectionError(e, request=request)
+requests.exceptions.ConnectionError: (MaxRetryError("HTTPSConnectionPool(host='huggingface.co', port=443): Max retries exceeded with url: /api/models/stabilityai/stable-diffusion-2-1-base/revision/fp16 (Caused by NewConnectionError('<urllib3.connection.HTTPSConnection object at 0x7f1a080a0910>: Failed to establish a new connection: [Errno 101] Network is unreachable'))"), '(Request ID: bd3a91c9-397a-48e3-97f1-b0c0f0f04bb0)')
+wandb: Waiting for W&B process to finish... (failed 1). Press Control-C to abort syncing.
+wandb: - 0.006 MB of 0.006 MB uploaded (0.000 MB deduped)wandb: \ 0.006 MB of 0.006 MB uploaded (0.000 MB deduped)wandb: | 0.011 MB of 0.020 MB uploaded (0.002 MB deduped)wandb: / 0.011 MB of 0.020 MB uploaded (0.002 MB deduped)wandb: - 0.020 MB of 0.020 MB uploaded (0.002 MB deduped)wandb: 🚀 View run testing_no_attack_pos_ratio_30 at: https://wandb.ai/better-diffusion-watermarks/diffusion_watermark/runs/fvzx83d2
+wandb: ️⚡ View job at https://wandb.ai/better-diffusion-watermarks/diffusion_watermark/jobs/QXJ0aWZhY3RDb2xsZWN0aW9uOjEwMzY3NDY2Ng==/version_details/v15
+wandb: Synced 5 W&B file(s), 0 media file(s), 2 artifact file(s) and 0 other file(s)
+wandb: Find logs at: ./wandb/run-20231206_223121-fvzx83d2/logs

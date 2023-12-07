@@ -96,23 +96,24 @@ def main(args):
         if init_latents_no_w is None:
             set_random_seed(seed)
             init_latents_w = pipe.get_random_latents()
-            
-            # change the percentage of pos and neg values of noise
-            if "w_pos_ratio" in args.w_pattern:
-                flat_tensor = init_latents_w.view(-1)
-                new_tensor = torch.tensor([adjust_pos_neg_percentage(x.item(), arg.w_pos_ratio) for x in flat_tensor], dtype=tensor.dtype)
-                new_tensor = new_tensor.view(tensor.shape)
-                init_latents_w =  new_tensor
-                
         else:
             init_latents_w = copy.deepcopy(init_latents_no_w)
+            
         if "ring_alt" in args.w_pattern:
             init_latents_w.apply_(lambda x: alt(x))        
         if "ring_tol" in args.w_pattern:
                 init_latents_w.apply_(lambda x: tol(x) if abs(x) < tol else x)
                 
-                
+        # change the percentage of pos and neg values of noise
+        flat_tensor = init_latents_w.view(-1)
+        new_tensor = torch.tensor(
+            [adjust_pos_neg_percentage(x.item(), args.w_pos_ratio) for x in flat_tensor],
+            dtype=init_latents_w.dtype
+        ).view(init_latents_w.shape)
+        new_tensor = new_tensor.to(device)
+        init_latents_w = copy.deepcopy(new_tensor)
 
+        
         # get watermarking mask
         watermarking_mask = get_watermarking_mask(init_latents_w, args, device)
 
