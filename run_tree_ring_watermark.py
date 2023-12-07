@@ -105,13 +105,14 @@ def main(args):
                 init_latents_w.apply_(lambda x: tol(x) if abs(x) < tol else x)
                 
         # change the percentage of pos and neg values of noise
-        flat_tensor = init_latents_w.view(-1)
-        new_tensor = torch.tensor(
-            [adjust_pos_neg_percentage(x.item(), args.w_pos_ratio) for x in flat_tensor],
-            dtype=init_latents_w.dtype
-        ).view(init_latents_w.shape)
-        new_tensor = new_tensor.to(device)
-        init_latents_w = copy.deepcopy(new_tensor)
+        if not args.w_pos_ratio == 0.5:
+            flat_tensor = init_latents_w.view(-1)
+            new_tensor = torch.tensor(
+                [adjust_pos_neg_percentage(x.item(), args.w_pos_ratio) for x in flat_tensor],
+                dtype=init_latents_w.dtype
+            ).view(init_latents_w.shape)
+            new_tensor = new_tensor.to(device)
+            init_latents_w = copy.deepcopy(new_tensor)
 
         
         # get watermarking mask
