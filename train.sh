@@ -13,4 +13,5 @@
 
 
 module load cuda/10.2.89
-python run_tree_ring_watermark.py --run_name no_attack_pos_48 --w_channel 3 --w_pattern ring --start 0 --end 10 --with_tracking --reference_model ViT-g-14 --reference_model_pretrain laion2b_s12b_b42k --w_pos_ratio 0.48
+python run_tree_ring_watermark.py --r_degree 90 --run_name attack-tol-90deg --w_channel 3 --w_pattern ring_tol --start 0 --end 10 --with_tracking --reference_model ViT-g-14  --reference_model_pretrain laion2b_s12b_b42k
+

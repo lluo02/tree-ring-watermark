@@ -13,11 +13,11 @@ import open_clip
 from optim_utils import *
 from io_utils import *
 
-tol = 0.01
 def tol(x):
-    if abs(x) < tol:
-        return tol+x if x < 0 else x-tol
-    return torch.randn(1)[0]
+    t = 0.01
+    if abs(x) < t:
+        return t+x if x < 0 else x-t
+    return x
 positive = True
 def alt(x):
     global positive
