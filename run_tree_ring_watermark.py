@@ -71,7 +71,11 @@ def main(args):
     clip_scores_w = []
     no_w_metrics = []
     w_metrics = []
-
+    temp = torch.ones(64, 64).cuda()
+    temp[:, 1::2] = -1
+    values = torch.stack([temp] * 4, dim=0)
+    values = torch.unsqueeze(values, 0)
+            
     for i in tqdm(range(args.start, args.end)):
         seed = i + args.gen_seed
         
@@ -99,7 +103,9 @@ def main(args):
         else:
             init_latents_w = copy.deepcopy(init_latents_no_w)
         if "ring_alt" in args.w_pattern:
-            init_latents_w.apply_(lambda x: alt(x))
+            init_latents_w = torch.abs(init_latents_w)
+            init_latents_w = torch.mul(init_latents_w, values)
+            
         # get watermarking mask
         watermarking_mask = get_watermarking_mask(init_latents_w, args, device)
 
