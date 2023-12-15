@@ -10,6 +10,27 @@ from typing import Any, Mapping
 import json
 import scipy
 
+def tol(x):
+    t = 0.001
+    if abs(x) < t:
+        return t+x if x > 0 else x-t
+    return x
+
+positive = True
+
+def alt(x):
+    global positive
+    if positive:
+        positive = not positive 
+        if x < 0:
+            return -x
+        return x
+    else:
+        positive = not positive 
+        if x > 0:
+            return -x
+        return x
+
 def read_json(filename: str) -> Mapping[str, Any]:
     """Returns a Python dict representation of JSON object at input file."""
     with open(filename) as fp:
@@ -178,7 +199,7 @@ def get_watermarking_pattern(pipe, args, device, shape=None):
     elif 'const' in args.w_pattern:
         gt_patch = torch.fft.fftshift(torch.fft.fft2(gt_init), dim=(-1, -2)) * 0
         gt_patch += args.w_pattern_const
-    elif 'ring' or 'ring_alt' in args.w_pattern:
+    elif 'ring' in args.w_pattern:
         gt_patch = torch.fft.fftshift(torch.fft.fft2(gt_init), dim=(-1, -2))
 
         gt_patch_tmp = copy.deepcopy(gt_patch)
@@ -188,7 +209,14 @@ def get_watermarking_pattern(pipe, args, device, shape=None):
             
             for j in range(gt_patch.shape[1]):
                 gt_patch[:, j, tmp_mask] = gt_patch_tmp[0, j, 0, i].item()
-    elif 'ring-tol' in args.w_pattern:
+    elif 'ring_tol' in args.w_pattern:
+        flat_tensor = gt_init.view(-1)
+        new_tensor = torch.tensor(
+            [tol(x.item()) for x in flat_tensor], 
+            dtype=gt_init.dtype
+        ).view(gt_init.shape)
+        new_tensor = new_tensor.to(device)
+        gt_init = copy.deepcopy(new_tensor)
         gt_patch = torch.fft.fftshift(torch.fft.fft2(gt_init), dim=(-1, -2))
 
         gt_patch_tmp = copy.deepcopy(gt_patch)
@@ -199,6 +227,47 @@ def get_watermarking_pattern(pipe, args, device, shape=None):
             for j in range(gt_patch.shape[1]):
                 gt_patch[:, j, tmp_mask] = gt_patch_tmp[0, j, 0, i].item()
 
+        torch.save(gt_patch, 'gt_patch_tol')
+    elif 'ring_alt' in args.w_pattern:
+        flat_tensor = gt_init.view(-1)
+        new_tensor = torch.tensor(
+            [alt(x.item()) for x in flat_tensor], 
+            dtype=gt_init.dtype
+        ).view(gt_init.shape)
+        new_tensor = new_tensor.to(device)
+        gt_init = copy.deepcopy(new_tensor)
+        gt_patch = torch.fft.fftshift(torch.fft.fft2(gt_init), dim=(-1, -2))
+
+        gt_patch_tmp = copy.deepcopy(gt_patch)
+        for i in range(args.w_radius, 0, -1):
+            tmp_mask = circle_mask(gt_init.shape[-1], r=i)
+            tmp_mask = torch.tensor(tmp_mask).to(device)
+            
+            for j in range(gt_patch.shape[1]):
+                gt_patch[:, j, tmp_mask] = gt_patch_tmp[0, j, 0, i].item()
+
+        torch.save(gt_patch, 'gt_patch_alt')
+
+    elif "ring_prop" in args.w_pattern:
+        if not args.w_pos_ratio == 0.5:
+            flat_tensor = gt_init.view(-1)
+            new_tensor = torch.tensor(
+                [adjust_pos_neg_percentage(x.item(), args.w_pos_ratio) for x in flat_tensor],
+                dtype=gt_init.dtype
+            ).view(gt_init.shape)
+            new_tensor = new_tensor.to(device)
+            gt_init = copy.deepcopy(new_tensor)
+        gt_patch = torch.fft.fftshift(torch.fft.fft2(gt_init), dim=(-1, -2))
+
+        gt_patch_tmp = copy.deepcopy(gt_patch)
+        for i in range(args.w_radius, 0, -1):
+            tmp_mask = circle_mask(gt_init.shape[-1], r=i)
+            tmp_mask = torch.tensor(tmp_mask).to(device)
+            
+            for j in range(gt_patch.shape[1]):
+                gt_patch[:, j, tmp_mask] = gt_patch_tmp[0, j, 0, i].item()
+
+        torch.save(gt_patch, 'gt_patch_prop')
     return gt_patch
 
 
@@ -232,6 +301,7 @@ def eval_watermark(reversed_latents_no_w, reversed_latents_w, watermarking_mask,
     if 'l1' in args.w_measurement:
         no_w_metric = torch.abs(reversed_latents_no_w_fft[watermarking_mask] - target_patch[watermarking_mask]).mean().item()
         w_metric = torch.abs(reversed_latents_w_fft[watermarking_mask] - target_patch[watermarking_mask]).mean().item()
+        torch.save(reversed_latents_w_fft[watermarking_mask], "target")
     else:
         NotImplementedError(f'w_measurement: {args.w_measurement}')
 
