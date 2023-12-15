@@ -54,10 +54,10 @@ def main(args):
     p_values = []
     p_values_w = []
 
-    temp = torch.ones(64, 64).cuda()
-    temp[:, 1::2] = -1
-    values = torch.stack([temp] * 4, dim=0)
-    values = torch.unsqueeze(values, 0)
+    #temp = torch.ones(64, 64).cuda()
+    #temp[:, 1::2] = -1
+    #values = torch.stack([temp] * 4, dim=0)
+    #values = torch.unsqueeze(values, 0)
             
     for i in tqdm(range(args.start, args.end)):
         seed = i + args.gen_seed
@@ -86,24 +86,6 @@ def main(args):
         else:
             init_latents_w = copy.deepcopy(init_latents_no_w)
             
-<<<<<<< HEAD
-        if "ring_alt" in args.w_pattern:
-            init_latents_w = torch.abs(init_latents_w)
-            init_latents_w = torch.mul(init_latents_w, values)
-               
-        if "ring_tol" in args.w_pattern:
-                init_latents_w.apply_(lambda x: tol(x) if abs(x) < tol else x)
-                
-        # change the percentage of pos and neg values of noise
-        if not args.w_pos_ratio == 0.5:
-            flat_tensor = init_latents_w.view(-1)
-            new_tensor = torch.tensor(
-                [adjust_pos_neg_percentage(x.item(), args.w_pos_ratio) for x in flat_tensor],
-                dtype=init_latents_w.dtype
-            ).view(init_latents_w.shape)
-            new_tensor = new_tensor.to(device)
-            init_latents_w = copy.deepcopy(new_tensor)
-=======
     
         
                 
@@ -111,7 +93,6 @@ def main(args):
        
 
         
->>>>>>> 8a04305 (Push)
         # get watermarking mask
         watermarking_mask = get_watermarking_mask(init_latents_w, args, device)
 
@@ -204,13 +185,6 @@ def main(args):
     low = tpr[np.where(fpr<.01)[0][-1]]
 
     if args.with_tracking:
-<<<<<<< HEAD
-        wandb.log({'Table': table})
-        wandb.log({'clip_score_mean': mean(clip_scores), 'clip_score_std': stdev(clip_scores),
-                   'w_clip_score_mean': mean(clip_scores_w), 'w_clip_score_std': stdev(clip_scores_w),
-                   'auc': auc, 'acc':acc, 'TPR@1%FPR': low, 'mean_p_val': mean(p_values), 'mean_p_val_w': mean(p_values_w)})
-    
-=======
         if i == 1:
             wandb.log({'Table': table})
             wandb.log({'clip_score_mean': mean(clip_scores), 'clip_score_std': 0,
@@ -222,7 +196,6 @@ def main(args):
                     'w_clip_score_mean': mean(clip_scores_w), 'w_clip_score_std': stdev(clip_scores_w),
                     'auc': auc, 'acc':acc, 'TPR@1%FPR': low})
             
->>>>>>> 8a04305 (Push)
     print(f'clip_score_mean: {mean(clip_scores)}')
     print(f'w_clip_score_mean: {mean(clip_scores_w)}')
     print(f'auc: {auc}, acc: {acc}, TPR@1%FPR: {low}')

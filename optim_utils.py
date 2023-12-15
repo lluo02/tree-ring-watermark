@@ -301,7 +301,7 @@ def eval_watermark(reversed_latents_no_w, reversed_latents_w, watermarking_mask,
     if 'l1' in args.w_measurement:
         no_w_metric = torch.abs(reversed_latents_no_w_fft[watermarking_mask] - target_patch[watermarking_mask]).mean().item()
         w_metric = torch.abs(reversed_latents_w_fft[watermarking_mask] - target_patch[watermarking_mask]).mean().item()
-        torch.save(reversed_latents_w_fft[watermarking_mask], "target")
+        torch.save(reversed_latents_w_fft[watermarking_mask], f"target_{args.w_pattern}")
     else:
         NotImplementedError(f'w_measurement: {args.w_measurement}')
 
