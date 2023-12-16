@@ -288,7 +288,7 @@ def eval_watermark(reversed_latents_no_w, reversed_latents_w, watermarking_mask,
     if 'l1' in args.w_measurement:
         no_w_metric = torch.abs(reversed_latents_no_w_fft[watermarking_mask] - target_patch[watermarking_mask]).mean().item()
         w_metric = torch.abs(reversed_latents_w_fft[watermarking_mask] - target_patch[watermarking_mask]).mean().item()
-        t = torch.fft.ifft2(torch.fft.ifftshift(reversed_latents_w_fft[watermarking_mask], ))).real
+        t = torch.fft.ifft2(torch.fft.ifftshift(reversed_latents_w_fft[watermarking_mask])).real
         torch.save(t, f"target_{args.w_pattern}.pt")
     else:
         NotImplementedError(f'w_measurement: {args.w_measurement}')
@@ -297,8 +297,8 @@ def eval_watermark(reversed_latents_no_w, reversed_latents_w, watermarking_mask,
 
 def get_p_value(reversed_latents_no_w, reversed_latents_w, watermarking_mask, gt_patch, args):
     # assume it's Fourier space wm
-    reversed_latents_no_w_fft = torch.fft.fftshift(torch.fft.fft2(reversed_latents_no_w), [watermarking_mask].flatten()
-    reversed_latents_w_fft = torch.fft.fftshift(torch.fft.fft2(reversed_latents_w), [watermarking_mask].flatten()
+    reversed_latents_no_w_fft = torch.fft.fftshift(torch.fft.fft2(reversed_latents_no_w), dim=(-1, -2))[watermarking_mask].flatten()
+    reversed_latents_w_fft = torch.fft.fftshift(torch.fft.fft2(reversed_latents_w), dim=(-1, -2))[watermarking_mask].flatten()
     target_patch = gt_patch[watermarking_mask].flatten()
 
     target_patch = torch.concatenate([target_patch.real, target_patch.imag])
