@@ -4,10 +4,9 @@ import copy
 from tqdm import tqdm
 from statistics import mean, stdev
 from sklearn import metrics
-
-import torch
 import sys
 import os
+import torch
 project_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 sys.path.insert(0, project_path)
 from inverse_stable_diffusion import InversableStableDiffusionPipeline
@@ -62,19 +61,3 @@ if __name__ == '__main__':
     pipe = pipe.to(device)
   
     init_latents_w = pipe.get_random_latents()
-    print(init_latents_w)
-    print("1")
-    init_latents_w_adjusted1 = change_latent_pos_neg_percentage(torch.clone(init_latents_w), target_pos_percentage=1)
-    print(init_latents_w_adjusted1)
-    print("2")
-    init_latents_w_adjusted2 = change_latent_pos_neg_percentage(torch.clone(init_latents_w), target_pos_percentage=0)
-    #print(init_latents_w_adjusted2)
-    print("3")
-    init_latents_w_adjusted3 = change_latent_pos_neg_percentage(torch.clone(init_latents_w), target_pos_percentage=0.3235)
-    #print(init_latents_w_adjusted3)
-    print("4")
-    init_latents_w_adjusted4 = change_latent_pos_neg_percentage(torch.clone(init_latents_w), target_pos_percentage=0.749)
-    #print(init_latents_w_adjusted4)
-    print("5 and 6")
-    init_latents_w_adjusted5 = change_latent_pos_neg_percentage(torch.clone(init_latents_w), target_pos_percentage=0.3)
-    init_latents_w_adjusted6 = change_latent_pos_neg_percentage(torch.clone(init_latents_w), target_pos_percentage=0.3)

@@ -1,5 +1,0 @@
-[default]
-entity = better-diffusion-watermarks
-project = diffusion_watermark
-base_url = https://api.wandb.ai
-
