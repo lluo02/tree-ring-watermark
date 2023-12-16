@@ -99,8 +99,6 @@ def main(args):
         # inject watermark
         init_latents_w = inject_watermark(init_latents_w, watermarking_mask, gt_patch, args)
 
-        torch.save(init_latents_w, f"init_latents_w_{i}_{args.w_pattern}_{args.w_pos_ratio}")
-        torch.save(init_latents_no_w, f"init_latents_no_w_{i}_{args.w_pattern}_{args.w_pos_ratio}")
 
         outputs_w = pipe(
             current_prompt,
@@ -183,7 +181,6 @@ def main(args):
     low = tpr[np.where(fpr<.01)[0][-1]]
 
     if args.with_tracking:
-         if args.with_tracking:
         wandb.log({'Table': table})
         wandb.log({'clip_score_mean': mean(clip_scores), 
                    'w_clip_score_mean': mean(clip_scores_w), 
