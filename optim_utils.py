@@ -297,8 +297,8 @@ def eval_watermark(reversed_latents_no_w, reversed_latents_w, watermarking_mask,
 
 def get_p_value(reversed_latents_no_w, reversed_latents_w, watermarking_mask, gt_patch, args):
     # assume it's Fourier space wm
-    reversed_latents_no_w_fft = torch.fft.fftshift(torch.fft.fft2(reversed_latents_no_w), [watermarking_mask].flatten()
-    reversed_latents_w_fft = torch.fft.fftshift(torch.fft.fft2(reversed_latents_w), [watermarking_mask].flatten()
+    reversed_latents_no_w_fft = torch.fft.fftshift(torch.fft.fft2(reversed_latents_no_w), [watermarking_mask].flatten())
+    reversed_latents_w_fft = torch.fft.fftshift(torch.fft.fft2(reversed_latents_w), [watermarking_mask].flatten())
     target_patch = gt_patch[watermarking_mask].flatten()
 
     target_patch = torch.concatenate([target_patch.real, target_patch.imag])
