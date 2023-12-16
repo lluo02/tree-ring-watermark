@@ -11,7 +11,7 @@ import json
 import scipy
 
 def tol(x):
-    t = 0.001
+    t = 1
     if abs(x) < t:
         return t+x if x > 0 else x-t
     return x
@@ -200,63 +200,49 @@ def get_watermarking_pattern(pipe, args, device, shape=None):
         gt_patch = torch.fft.fftshift(torch.fft.fft2(gt_init), dim=(-1, -2)) * 0
         gt_patch += args.w_pattern_const
     elif 'ring' in args.w_pattern:
-        gt_patch = torch.fft.fftshift(torch.fft.fft2(gt_init), dim=(-1, -2))
-
-        gt_patch_tmp = copy.deepcopy(gt_patch)
-        for i in range(args.w_radius, 0, -1):
-            tmp_mask = circle_mask(gt_init.shape[-1], r=i)
-            tmp_mask = torch.tensor(tmp_mask).to(device)
-            
-            for j in range(gt_patch.shape[1]):
-                gt_patch[:, j, tmp_mask] = gt_patch_tmp[0, j, 0, i].item()
-    elif 'ring_tol' in args.w_pattern:
-        flat_tensor = gt_init.view(-1)
-        new_tensor = torch.tensor(
-            [tol(x.item()) for x in flat_tensor], 
-            dtype=gt_init.dtype
-        ).view(gt_init.shape)
-        new_tensor = new_tensor.to(device)
-        gt_init = copy.deepcopy(new_tensor)
-        gt_patch = torch.fft.fftshift(torch.fft.fft2(gt_init), dim=(-1, -2))
-
-        gt_patch_tmp = copy.deepcopy(gt_patch)
-        for i in range(args.w_radius, 0, -1):
-            tmp_mask = circle_mask(gt_init.shape[-1], r=i)
-            tmp_mask = torch.tensor(tmp_mask).to(device)
-            
-            for j in range(gt_patch.shape[1]):
-                gt_patch[:, j, tmp_mask] = gt_patch_tmp[0, j, 0, i].item()
-
-        torch.save(gt_patch, 'gt_patch_tol')
-    elif 'ring_alt' in args.w_pattern:
-        flat_tensor = gt_init.view(-1)
-        new_tensor = torch.tensor(
-            [alt(x.item()) for x in flat_tensor], 
-            dtype=gt_init.dtype
-        ).view(gt_init.shape)
-        new_tensor = new_tensor.to(device)
-        gt_init = copy.deepcopy(new_tensor)
-        gt_patch = torch.fft.fftshift(torch.fft.fft2(gt_init), dim=(-1, -2))
-
-        gt_patch_tmp = copy.deepcopy(gt_patch)
-        for i in range(args.w_radius, 0, -1):
-            tmp_mask = circle_mask(gt_init.shape[-1], r=i)
-            tmp_mask = torch.tensor(tmp_mask).to(device)
-            
-            for j in range(gt_patch.shape[1]):
-                gt_patch[:, j, tmp_mask] = gt_patch_tmp[0, j, 0, i].item()
-
-        torch.save(gt_patch, 'gt_patch_alt')
-
-    elif "ring_prop" in args.w_pattern:
-        if not args.w_pos_ratio == 0.5:
+        if args.w_pattern == "ring_tol":
+            print(gt_init.shape)
             flat_tensor = gt_init.view(-1)
             new_tensor = torch.tensor(
-                [adjust_pos_neg_percentage(x.item(), args.w_pos_ratio) for x in flat_tensor],
+                [tol(x.item()) for x in flat_tensor], 
                 dtype=gt_init.dtype
             ).view(gt_init.shape)
             new_tensor = new_tensor.to(device)
             gt_init = copy.deepcopy(new_tensor)
+            torch.save(gt_init, 'gt_init_tol')
+        elif args.w_pattern == "ring_alt":
+            flat_tensor = gt_init.view(-1)
+            new_tensor = torch.tensor(
+                [alt(x.item()) for x in flat_tensor], 
+                dtype=gt_init.dtype
+            ).view(gt_init.shape)
+            new_tensor = new_tensor.to(device)
+            gt_init = copy.deepcopy(new_tensor)
+           
+            torch.save(gt_init, 'gt_patch_alt')
+        elif args.w_pattern == "ring_prop":
+            if not args.w_pos_ratio == 0.5:
+                flat_tensor = gt_init.view(-1)
+                new_tensor = torch.tensor(
+                    [adjust_pos_neg_percentage(x.item(), args.w_pos_ratio) for x in flat_tensor],
+                    dtype=gt_init.dtype
+                ).view(gt_init.shape)
+                new_tensor = new_tensor.to(device)
+                gt_init = copy.deepcopy(new_tensor)
+                torch.save(gt_init, "gt_init_prod")
+        else: 
+            torch.save(gt_init, 'gt_init_ring')
+
+        gt_patch = torch.fft.fftshift(torch.fft.fft2(gt_init), dim=(-1, -2))
+        gt_patch_tmp = copy.deepcopy(gt_patch)
+        for i in range(args.w_radius, 0, -1):
+            tmp_mask = circle_mask(gt_init.shape[-1], r=i)
+            tmp_mask = torch.tensor(tmp_mask).to(device)
+            
+            for j in range(gt_patch.shape[1]):
+                gt_patch[:, j, tmp_mask] = gt_patch_tmp[0, j, 0, i].item()
+    elif "ring_prop" in args.w_pattern:
+        
         gt_patch = torch.fft.fftshift(torch.fft.fft2(gt_init), dim=(-1, -2))
 
         gt_patch_tmp = copy.deepcopy(gt_patch)
@@ -291,6 +277,7 @@ def eval_watermark(reversed_latents_no_w, reversed_latents_w, watermarking_mask,
         reversed_latents_no_w_fft = torch.fft.fftshift(torch.fft.fft2(reversed_latents_no_w), dim=(-1, -2))
         reversed_latents_w_fft = torch.fft.fftshift(torch.fft.fft2(reversed_latents_w), dim=(-1, -2))
         target_patch = gt_patch
+        #torch.save(reversed_latents_w_fft[watermarking_mask], f"target_{args.w_pattern}.pt")
     elif 'seed' in args.w_measurement:
         reversed_latents_no_w_fft = reversed_latents_no_w
         reversed_latents_w_fft = reversed_latents_w
@@ -301,7 +288,8 @@ def eval_watermark(reversed_latents_no_w, reversed_latents_w, watermarking_mask,
     if 'l1' in args.w_measurement:
         no_w_metric = torch.abs(reversed_latents_no_w_fft[watermarking_mask] - target_patch[watermarking_mask]).mean().item()
         w_metric = torch.abs(reversed_latents_w_fft[watermarking_mask] - target_patch[watermarking_mask]).mean().item()
-        torch.save(reversed_latents_w_fft[watermarking_mask], f"target_{args.w_pattern}")
+        t = torch.fft.ifft2(torch.fft.ifftshift(reversed_latents_w_fft, dim=(-1, -2))).real
+        torch.save(t, f"target_{args.w_pattern}.pt")
     else:
         NotImplementedError(f'w_measurement: {args.w_measurement}')
 
