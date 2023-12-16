@@ -1,0 +1,101 @@
+wandb: Currently logged in as: shilin40 (better-diffusion-watermarks). Use `wandb login --relogin` to force relogin
+wandb: - Waiting for wandb.init()...wandb: \ Waiting for wandb.init()...wandb: | Waiting for wandb.init()...wandb: wandb version 0.16.1 is available!  To upgrade, please run:
+wandb:  $ pip install wandb --upgrade
+wandb: Tracking run with wandb version 0.15.12
+wandb: Run data is saved locally in /nfshomes/shilin40/CMSC673/venv/tree-ring-watermark/wandb/run-20231216_022704-f2wfhm0v
+wandb: Run `wandb offline` to turn off syncing.
+wandb: Syncing run 55_prop_90deg
+wandb: ⭐️ View project at https://wandb.ai/better-diffusion-watermarks/diffusion_watermark
+wandb: 🚀 View run at https://wandb.ai/better-diffusion-watermarks/diffusion_watermark/runs/f2wfhm0v
+text_encoder/model.safetensors not found
+Loading pipeline components...:   0%|          | 0/5 [00:00<?, ?it/s]Loading pipeline components...:  20%|██        | 1/5 [00:06<00:25,  6.35s/it]Loading pipeline components...:  40%|████      | 2/5 [00:07<00:09,  3.03s/it]Loading pipeline components...:  60%|██████    | 3/5 [00:10<00:06,  3.41s/it]Loading pipeline components...: 100%|██████████| 5/5 [00:11<00:00,  2.20s/it]
+/nfshomes/shilin40/CMSC673/venv/tree-ring-watermark/inverse_stable_diffusion.py:63: FutureWarning: Accessing config attribute `in_channels` directly via 'UNet2DConditionModel' object attribute is deprecated. Please access 'in_channels' over 'UNet2DConditionModel's config object instead, e.g. 'unet.config.in_channels'.
+  num_channels_latents = self.unet.in_channels
+Traceback (most recent call last):
+  File "/nfshomes/shilin40/CMSC673/venv/tree-ring-watermark/run_tree_ring_watermark.py", line 239, in <module>
+    main(args)
+  File "/nfshomes/shilin40/CMSC673/venv/tree-ring-watermark/run_tree_ring_watermark.py", line 47, in main
+    gt_patch = get_watermarking_pattern(pipe, args, device)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/nfshomes/shilin40/CMSC673/venv/tree-ring-watermark/optim_utils.py", line 242, in get_watermarking_pattern
+    gt_patch = resize_tensor(gt_patch, gt_init.shape[-2:]) # New change
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/nfshomes/shilin40/CMSC673/venv/tree-ring-watermark/optim_utils.py", line 173, in resize_tensor
+    return torch.nn.functional.interpolate(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/nfshomes/shilin40/CMSC673/venv/lib/python3.11/site-packages/torch/nn/functional.py", line 3916, in interpolate
+    raise ValueError(
+ValueError: Input and output must have the same number of spatial dimensions, but got input with spatial dimensions of [1, 4, 64, 64] and output size of torch.Size([64, 64]). Please provide input tensor in (N, C, d1, d2, ...,dK) format and output size in (o1, o2, ...,oK) format.
+wandb: Waiting for W&B process to finish... (failed 1). Press Control-C to abort syncing.
+wandb: - 0.006 MB of 0.006 MB uploaded (0.000 MB deduped)wandb: \ 0.006 MB of 0.011 MB uploaded (0.000 MB deduped)wandb: 🚀 View run 55_prop_90deg at: https://wandb.ai/better-diffusion-watermarks/diffusion_watermark/runs/f2wfhm0v
+wandb: ️⚡ View job at https://wandb.ai/better-diffusion-watermarks/diffusion_watermark/jobs/QXJ0aWZhY3RDb2xsZWN0aW9uOjEwMzY3NDY2Ng==/version_details/v23
+wandb: Synced 5 W&B file(s), 0 media file(s), 0 artifact file(s) and 0 other file(s)
+wandb: Find logs at: ./wandb/run-20231216_022704-f2wfhm0v/logs
+Exception in thread IntMsgThr:
+Traceback (most recent call last):
+  File "/opt/local/stow/Python3-3.11.2/lib/python3.11/threading.py", line 1038, in _bootstrap_inner
+Exception in thread NetStatThr:
+Traceback (most recent call last):
+  File "/opt/local/stow/Python3-3.11.2/lib/python3.11/threading.py", line 1038, in _bootstrap_inner
+    self.run()
+    self.run()  File "/opt/local/stow/Python3-3.11.2/lib/python3.11/threading.py", line 975, in run
+
+  File "/opt/local/stow/Python3-3.11.2/lib/python3.11/threading.py", line 975, in run
+    self._target(*self._args, **self._kwargs)
+  File "/nfshomes/shilin40/CMSC673/venv/lib/python3.11/site-packages/wandb/sdk/wandb_run.py", line 299, in check_internal_messages
+    self._target(*self._args, **self._kwargs)
+  File "/nfshomes/shilin40/CMSC673/venv/lib/python3.11/site-packages/wandb/sdk/wandb_run.py", line 267, in check_network_status
+    self._loop_check_status(
+  File "/nfshomes/shilin40/CMSC673/venv/lib/python3.11/site-packages/wandb/sdk/wandb_run.py", line 223, in _loop_check_status
+    self._loop_check_status(
+  File "/nfshomes/shilin40/CMSC673/venv/lib/python3.11/site-packages/wandb/sdk/wandb_run.py", line 223, in _loop_check_status
+    local_handle = request()
+                   ^^^^^^^^^
+    local_handle = request()
+  File "/nfshomes/shilin40/CMSC673/venv/lib/python3.11/site-packages/wandb/sdk/interface/interface.py", line 743, in deliver_internal_messages
+                   ^^^^^^^^^
+  File "/nfshomes/shilin40/CMSC673/venv/lib/python3.11/site-packages/wandb/sdk/interface/interface.py", line 735, in deliver_network_status
+    return self._deliver_network_status(status)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/nfshomes/shilin40/CMSC673/venv/lib/python3.11/site-packages/wandb/sdk/interface/interface_shared.py", line 475, in _deliver_network_status
+    return self._deliver_internal_messages(internal_message)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/nfshomes/shilin40/CMSC673/venv/lib/python3.11/site-packages/wandb/sdk/interface/interface_shared.py", line 481, in _deliver_internal_messages
+    return self._deliver_record(record)
+           ^^^    ^return self._deliver_record(record)^
+^^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^^^^^^^^^^^^^^^^^^^^^^
+^^  File "/nfshomes/shilin40/CMSC673/venv/lib/python3.11/site-packages/wandb/sdk/interface/interface_shared.py", line 428, in _deliver_record
+^^^^^^^^^^^^^^^
+  File "/nfshomes/shilin40/CMSC673/venv/lib/python3.11/site-packages/wandb/sdk/interface/interface_shared.py", line 428, in _deliver_record
+    handle = mailbox._deliver_record(record, interface=self)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    handle = mailbox._deliver_record(record, interface=self)
+  File "/nfshomes/shilin40/CMSC673/venv/lib/python3.11/site-packages/wandb/sdk/lib/mailbox.py", line 455, in _deliver_record
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/nfshomes/shilin40/CMSC673/venv/lib/python3.11/site-packages/wandb/sdk/lib/mailbox.py", line 455, in _deliver_record
+    interface._publish(record)
+  File "/nfshomes/shilin40/CMSC673/venv/lib/python3.11/site-packages/wandb/sdk/interface/interface_sock.py", line 51, in _publish
+    interface._publish(record)
+  File "/nfshomes/shilin40/CMSC673/venv/lib/python3.11/site-packages/wandb/sdk/interface/interface_sock.py", line 51, in _publish
+    self._sock_client.send_record_publish(record)
+  File "/nfshomes/shilin40/CMSC673/venv/lib/python3.11/site-packages/wandb/sdk/lib/sock_client.py", line 221, in send_record_publish
+    self._sock_client.send_record_publish(record)
+  File "/nfshomes/shilin40/CMSC673/venv/lib/python3.11/site-packages/wandb/sdk/lib/sock_client.py", line 221, in send_record_publish
+    self.send_server_request(server_req)
+  File "/nfshomes/shilin40/CMSC673/venv/lib/python3.11/site-packages/wandb/sdk/lib/sock_client.py", line 155, in send_server_request
+    self.send_server_request(server_req)
+  File "/nfshomes/shilin40/CMSC673/venv/lib/python3.11/site-packages/wandb/sdk/lib/sock_client.py", line 155, in send_server_request
+    self._send_message(msg)
+  File "/nfshomes/shilin40/CMSC673/venv/lib/python3.11/site-packages/wandb/sdk/lib/sock_client.py", line 152, in _send_message
+    self._send_message(msg)
+  File "/nfshomes/shilin40/CMSC673/venv/lib/python3.11/site-packages/wandb/sdk/lib/sock_client.py", line 152, in _send_message
+    self._sendall_with_error_handle(header + data)
+  File "/nfshomes/shilin40/CMSC673/venv/lib/python3.11/site-packages/wandb/sdk/lib/sock_client.py", line 130, in _sendall_with_error_handle
+    self._sendall_with_error_handle(header + data)
+  File "/nfshomes/shilin40/CMSC673/venv/lib/python3.11/site-packages/wandb/sdk/lib/sock_client.py", line 130, in _sendall_with_error_handle
+    sent = self._sock.send(data)
+           ^^^^^^^^^^^^^^^^^^^^^
+BrokenPipeError: [Errno 32] Broken pipe
+    sent = self._sock.send(data)
+           ^^^^^^^^^^^^^^^^^^^^^
+BrokenPipeError: [Errno 32] Broken pipe
