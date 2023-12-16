@@ -45,6 +45,8 @@ def main(args):
     
     # ground-truth patch
     gt_patch = get_watermarking_pattern(pipe, args, device)
+    
+    torch.save(gt_patch, f"gt_patch_{args.w_pattern}.pt")
 
     results = []
     clip_scores = []
