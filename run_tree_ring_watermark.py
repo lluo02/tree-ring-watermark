@@ -139,8 +139,6 @@ def main(args):
             num_inference_steps=args.test_num_inference_steps,
         )
 
-        torch.save(reversed_latents_w, f"reversed_latents_w_{i}_{args.w_pattern}_{args.w_pos_ratio}")
-        torch.save(reversed_latents_no_w, f"reversed_latents_no_w_{i}_{args.w_pattern}_{args.w_pos_ratio}")
 
         # eval
         no_w_metric, w_metric = eval_watermark(reversed_latents_no_w, reversed_latents_w, watermarking_mask, gt_patch, args)
@@ -185,17 +183,11 @@ def main(args):
     low = tpr[np.where(fpr<.01)[0][-1]]
 
     if args.with_tracking:
-        if i == 1:
-            wandb.log({'Table': table})
-            wandb.log({'clip_score_mean': mean(clip_scores), 'clip_score_std': 0,
-                    'w_clip_score_mean': mean(clip_scores_w), 'w_clip_score_std': 0,
-                    'auc': auc, 'acc':acc, 'TPR@1%FPR': low})
-        else: 
-            wandb.log({'Table': table})
-            wandb.log({'clip_score_mean': mean(clip_scores), 'clip_score_std': stdev(clip_scores),
-                    'w_clip_score_mean': mean(clip_scores_w), 'w_clip_score_std': stdev(clip_scores_w),
-                    'auc': auc, 'acc':acc, 'TPR@1%FPR': low})
-            
+         if args.with_tracking:
+        wandb.log({'Table': table})
+        wandb.log({'clip_score_mean': mean(clip_scores), 
+                   'w_clip_score_mean': mean(clip_scores_w), 
+                   'auc': auc, 'acc':acc, 'TPR@1%FPR': low, 'mean_p_val': mean(p_values), 'mean_p_val_w': mean(p_values_w)})  
     print(f'clip_score_mean: {mean(clip_scores)}')
     print(f'w_clip_score_mean: {mean(clip_scores_w)}')
     print(f'auc: {auc}, acc: {acc}, TPR@1%FPR: {low}')
