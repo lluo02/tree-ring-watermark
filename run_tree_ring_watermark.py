@@ -13,6 +13,27 @@ import open_clip
 from optim_utils import *
 from io_utils import *
 
+def tol(x):
+    t = 1
+    if abs(x) < t:
+        return t+x if x > 0 else x-t
+    return x
+
+positive = True
+
+def alt(x):
+    global positive
+    if positive:
+        positive = not positive 
+        if x < 0:
+            return -x
+        return x
+    else:
+        positive = not positive 
+        if x > 0:
+            return -x
+        return x
+
 def main(args):
     table = None
     if args.with_tracking:
@@ -46,7 +67,7 @@ def main(args):
     # ground-truth patch
     gt_patch = get_watermarking_pattern(pipe, args, device)
     
-    torch.save(gt_patch, f"gt_patch_{args.w_pattern}.pt")
+    #torch.save(gt_patch, f"gt_patch_{args.w_pattern}.pt")
 
     results = []
     clip_scores = []
@@ -87,14 +108,8 @@ def main(args):
             init_latents_w = pipe.get_random_latents()
         else:
             init_latents_w = copy.deepcopy(init_latents_no_w)
-            
-    
         
-                
-        # change the percentage of pos and neg values of noise
-       
 
-        
         # get watermarking mask
         watermarking_mask = get_watermarking_mask(init_latents_w, args, device)
 
@@ -102,6 +117,26 @@ def main(args):
         init_latents_w = inject_watermark(init_latents_w, watermarking_mask, gt_patch, args)
 
 
+        if args.w_pattern == "ring_tol":
+            print(init_latents_w.shape)
+            flat_tensor = init_latents_w.view(-1)
+            new_tensor = torch.tensor(
+                [tol(x.item()) for x in flat_tensor], 
+                dtype=init_latents_w.dtype
+            ).view(init_latents_w.shape)
+            new_tensor = new_tensor.to(device)
+            init_latents_w = copy.deepcopy(new_tensor)
+            torch.save(init_latents_w, "tol_noattack_init_latents")
+        elif args.w_pattern == "ring_prop":
+            if not args.w_pos_ratio == 0.5:
+                flat_tensor = init_latents_w.view(-1)
+                new_tensor = torch.tensor(
+                    [adjust_pos_neg_percentage(x.item(), args.w_pos_ratio) for x in flat_tensor],
+                    dtype=init_latents_w.dtype
+                ).view(init_latents_w.shape)
+                new_tensor = new_tensor.to(device)
+                init_latents_w = copy.deepcopy(new_tensor)
+                torch.save(init_latents_w, f"init_{args.output_file}")
         outputs_w = pipe(
             current_prompt,
             num_images_per_prompt=args.num_images,
@@ -138,7 +173,7 @@ def main(args):
             guidance_scale=1,
             num_inference_steps=args.test_num_inference_steps,
         )
-
+        torch.save(reversed_latents_w, f"reversed_{args.output_file}")
 
         # eval
         no_w_metric, w_metric = eval_watermark(reversed_latents_no_w, reversed_latents_w, watermarking_mask, gt_patch, args)
@@ -209,6 +244,7 @@ if __name__ == '__main__':
     parser.add_argument('--reference_model_pretrain', default=None)
     parser.add_argument('--max_num_log_image', default=100, type=int)
     parser.add_argument('--gen_seed', default=0, type=int)
+    parser.add_argument('--output_file', default="noattack")
 
     # watermark
     parser.add_argument('--w_seed', default=999999, type=int)

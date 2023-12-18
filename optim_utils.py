@@ -176,7 +176,7 @@ def get_watermarking_pattern(pipe, args, device, shape=None):
         gt_init = torch.randn(*shape, device=device)
     else:
         gt_init = pipe.get_random_latents()
-
+    gt_patch = gt_init
     if 'seed_ring' in args.w_pattern:
         gt_patch = gt_init
 
@@ -209,7 +209,7 @@ def get_watermarking_pattern(pipe, args, device, shape=None):
             ).view(gt_init.shape)
             new_tensor = new_tensor.to(device)
             gt_init = copy.deepcopy(new_tensor)
-            torch.save(gt_init, 'gt_init_tol')
+            torch.save(gt_init, 'gt_init_tol_blur')
         elif args.w_pattern == "ring_alt":
             flat_tensor = gt_init.view(-1)
             new_tensor = torch.tensor(
@@ -219,7 +219,7 @@ def get_watermarking_pattern(pipe, args, device, shape=None):
             new_tensor = new_tensor.to(device)
             gt_init = copy.deepcopy(new_tensor)
            
-            torch.save(gt_init, 'gt_patch_alt')
+            torch.save(gt_init, 'gt_init_alt')
         elif args.w_pattern == "ring_prop":
             if not args.w_pos_ratio == 0.5:
                 flat_tensor = gt_init.view(-1)
@@ -231,7 +231,7 @@ def get_watermarking_pattern(pipe, args, device, shape=None):
                 gt_init = copy.deepcopy(new_tensor)
                 torch.save(gt_init, "gt_init_prod")
         else: 
-            torch.save(gt_init, 'gt_init_ring')
+            torch.save(gt_init, 'gt_init_ring_blur')
 
         gt_patch = torch.fft.fftshift(torch.fft.fft2(gt_init), dim=(-1, -2))
         gt_patch_tmp = copy.deepcopy(gt_patch)
@@ -241,19 +241,6 @@ def get_watermarking_pattern(pipe, args, device, shape=None):
             
             for j in range(gt_patch.shape[1]):
                 gt_patch[:, j, tmp_mask] = gt_patch_tmp[0, j, 0, i].item()
-    elif "ring_prop" in args.w_pattern:
-        
-        gt_patch = torch.fft.fftshift(torch.fft.fft2(gt_init), dim=(-1, -2))
-
-        gt_patch_tmp = copy.deepcopy(gt_patch)
-        for i in range(args.w_radius, 0, -1):
-            tmp_mask = circle_mask(gt_init.shape[-1], r=i)
-            tmp_mask = torch.tensor(tmp_mask).to(device)
-            
-            for j in range(gt_patch.shape[1]):
-                gt_patch[:, j, tmp_mask] = gt_patch_tmp[0, j, 0, i].item()
-
-        torch.save(gt_patch, 'gt_patch_prop')
     return gt_patch
 
 
@@ -288,8 +275,8 @@ def eval_watermark(reversed_latents_no_w, reversed_latents_w, watermarking_mask,
     if 'l1' in args.w_measurement:
         no_w_metric = torch.abs(reversed_latents_no_w_fft[watermarking_mask] - target_patch[watermarking_mask]).mean().item()
         w_metric = torch.abs(reversed_latents_w_fft[watermarking_mask] - target_patch[watermarking_mask]).mean().item()
-        t = torch.fft.ifft2(torch.fft.ifftshift(reversed_latents_w_fft[watermarking_mask])).real
-        torch.save(t, f"target_{args.w_pattern}.pt")
+        t = torch.fft.ifft2(torch.fft.ifftshift(reversed_latents_w_fft, dim=(-1, -2)))[watermarking_mask].real
+        #torch.save(t, f"target_{args.w_pattern}_80.pt")
     else:
         NotImplementedError(f'w_measurement: {args.w_measurement}')
 
@@ -323,4 +310,4 @@ def get_p_value(reversed_latents_no_w, reversed_latents_w, watermarking_mask, gt
 # put the percentage of positive values youw want in the parameter
 def adjust_pos_neg_percentage(value, pct):
     is_positive = torch.rand(1).item() < pct
-    return abs(value) if is_positive else -abs(value)
+    return abs(value)-0.842 if is_positive else -abs(value)-0.842
