@@ -13,5 +13,5 @@
 
 
 module load cuda/10.2.89
-python run_tree_ring_watermark.py --run_name 55_prop_90deg --w_channel 3 --w_pattern ring --start 0 --end 1000 --with_tracking --reference_model ViT-g-14 --reference_model_pretrain laion2b_s12b_b42k --r_degree 90 --w_pos_ratio 0.55
+python run_tree_ring_watermark.py --run_name testing_55_prop_90deg_wradius1 --w_channel 3 --w_pattern ring --start 0 --end 10 --with_tracking --reference_model ViT-g-14 --reference_model_pretrain laion2b_s12b_b42k --r_degree 90 --w_pos_ratio 0.55 --w_radius 1
 

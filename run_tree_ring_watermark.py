@@ -136,7 +136,7 @@ def main(args):
                 ).view(init_latents_w.shape)
                 new_tensor = new_tensor.to(device)
                 init_latents_w = copy.deepcopy(new_tensor)
-                torch.save(init_latents_w, f"init_{args.output_file}")
+                #torch.save(init_latents_w, f"init_{args.output_file}")
         outputs_w = pipe(
             current_prompt,
             num_images_per_prompt=args.num_images,

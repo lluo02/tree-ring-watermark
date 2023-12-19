@@ -229,7 +229,7 @@ def get_watermarking_pattern(pipe, args, device, shape=None):
                 ).view(gt_init.shape)
                 new_tensor = new_tensor.to(device)
                 gt_init = copy.deepcopy(new_tensor)
-                torch.save(gt_init, "gt_init_prod")
+                # torch.save(gt_init, "gt_init_prod")
         else: 
             torch.save(gt_init, 'gt_init_ring_blur')
 
@@ -308,6 +308,12 @@ def get_p_value(reversed_latents_no_w, reversed_latents_w, watermarking_mask, gt
 
 # use this method to change the percentage of positive and negative values in latent
 # put the percentage of positive values youw want in the parameter
+"""
+def adjust_pos_neg_percentage(value, pct):
+    is_positive = torch.rand(1).item() < pct
+    return abs(value) if is_positive else -abs(value)
+"""
+# Subtract z-score
 def adjust_pos_neg_percentage(value, pct):
     is_positive = torch.rand(1).item() < pct
     return abs(value)-0.842 if is_positive else -abs(value)-0.842
