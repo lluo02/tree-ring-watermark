@@ -13,8 +13,7 @@ import open_clip
 from optim_utils import *
 from io_utils import *
 
-def tol(x):
-    t = 1
+def tol(x, t):
     if abs(x) < t:
         return t+x if x > 0 else x-t
     return x
@@ -121,12 +120,12 @@ def main(args):
             print(init_latents_w.shape)
             flat_tensor = init_latents_w.view(-1)
             new_tensor = torch.tensor(
-                [tol(x.item()) for x in flat_tensor], 
+                [tol(x.item(), args.w_tol_bound) for x in flat_tensor], 
                 dtype=init_latents_w.dtype
             ).view(init_latents_w.shape)
             new_tensor = new_tensor.to(device)
             init_latents_w = copy.deepcopy(new_tensor)
-            torch.save(init_latents_w, "tol_noattack_init_latents")
+            torch.save(init_latents_w, f"init_{args.output_file}")
         elif args.w_pattern == "ring_prop":
             if not args.w_pos_ratio == 0.5:
                 flat_tensor = init_latents_w.view(-1)
@@ -256,6 +255,7 @@ if __name__ == '__main__':
     parser.add_argument('--w_injection', default='complex')
     parser.add_argument('--w_pattern_const', default=0, type=float)
     parser.add_argument('--w_pos_ratio', default=0.5, type=float)
+    parser.add_argument('--w_tol_bound', default=0, type=float)
     
     # for image distortion
     parser.add_argument('--r_degree', default=None, type=float)
